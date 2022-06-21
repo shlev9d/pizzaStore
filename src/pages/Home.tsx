@@ -1,19 +1,16 @@
-import React, { FC, useEffect, useRef } from 'react'
+import React, { FC, useCallback, useEffect, useRef } from 'react'
 import Categories from '../components/Categories'
 import Skeleton from '../components/PizzaBlock/Skeleton'
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock'
-import Sort, { list } from '../components/Sort'
+import Sort from '../components/Sort'
 import Pagination from '../components/Pagination/Pagination'
 import { useSelector } from 'react-redux'
 import {
 	selectFilter,
 	setCategotyId,
 	setCurrentPage,
-	setFilters,
 } from '../redux/slices/filterSlice'
-import qs from 'qs'
-import { useNavigate } from 'react-router-dom'
-import { fetchPizzas, SearchPizzaParams, selectPizzasData } from '../redux/slices/pizzasSlice'
+import { fetchPizzas, selectPizzasData } from '../redux/slices/pizzasSlice'
 import { useAppDispatch } from '../redux/store'
 
 
@@ -21,18 +18,18 @@ import { useAppDispatch } from '../redux/store'
 
 
 const Home: FC = () => {
-	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const isSearch = useRef(false)
-	const isMounted = useRef(false)
 
 	const { categoryId, sort, currentPage, searchValue } =
 		useSelector(selectFilter)
 	const { items, status } = useSelector(selectPizzasData)
 
-	const onChangeCategory = (idx: number) => {
+	const onChangeCategory = useCallback( (idx: number) => {
 		dispatch(setCategotyId(idx))
-	}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
 	const onChangePage = (page: number) => {
 		dispatch(setCurrentPage(page))
 	}
@@ -109,7 +106,7 @@ const Home: FC = () => {
 		<div className='container'>
 			<div className='content__top'>
 				<Categories value={categoryId} onChangeCategory={onChangeCategory} />
-				<Sort />
+				<Sort value={sort} />
 			</div>
 			<h2 className='content__title'>Все пиццы</h2>
 			{status === 'error' ? (
